@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dudu Anki ❤️</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background:
+        radial-gradient(circle at 20% 20%, #4b2140 0%, transparent 30%),
+        radial-gradient(circle at 80% 80%, #241b4a 0%, transparent 30%),
+        linear-gradient(135deg, #120d24, #24142f, #11182d);
+    color: white;
+}
+
+/* =========================
+   SLIDE SYSTEM
+========================= */
+
+#app {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+.slide {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    display: none;
+
+    justify-content: center;
+    align-items: center;
+
+    padding: 30px 20px;
+
+    overflow-y: auto;
+}
+
+.slide.active {
+    display: flex;
+    animation: slideIn 0.75s ease forwards;
+}
+
+.slide-content {
+    width: min(900px, 94%);
+    max-height: 90vh;
+    overflow-y: auto;
+
+    text-align: center;
+
+    padding: 35px 28px;
+
+    border-radius: 28px;
+
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+
+    backdrop-filter: blur(14px);
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,0.35);
+}
+
+/* =========================
+   TYPOGRAPHY
+========================= */
+
+h1 {
+    font-size: clamp(42px, 8vw, 80px);
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: clamp(30px, 5vw, 55px);
+    margin-bottom: 22px;
+}
+
+h3 {
+    font-size: 25px;
+    margin-bottom: 15px;
+}
+
+p {
+    font-size: 18px;
+    line-height: 1.8;
+    margin-bottom: 18px;
+}
+
+.small {
+    font-size: 15px;
+    opacity: 0.75;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+button {
+    border: none;
+    outline: none;
+
+    padding: 14px 26px;
+    margin: 10px;
+
+    border-radius: 50px;
+
+    background: linear-gradient(135deg, #ff6f9f, #b96cff);
+    color: white;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.25s;
+}
+
+button:hover {
+    transform: translateY(-3px) scale(1.03);
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+.next-btn {
+    margin-top: 20px;
+}
+
+/* =========================
+   PHOTO PLACEHOLDERS
+========================= */
+
+.photo-slot {
+    width: min(350px, 90%);
+    height: 220px;
+
+    margin: 20px auto;
+
+    border-radius: 22px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(255,255,255,0.08);
+
+    border: 2px dashed rgba(255,255,255,0.3);
+
+    color: rgba(255,255,255,0.65);
+
+    overflow: hidden;
+}
+
+.photo-slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* =========================
+   LETTER
+========================= */
+
+.letter {
+    text-align: left;
+
+    background: rgba(255,248,238,0.96);
+
+    color: #40253b;
+
+    padding: 30px;
+
+    border-radius: 20px;
+
+    line-height: 1.8;
+
+    box-shadow: 0 15px 45px rgba(0,0,0,0.3);
+}
+
+.letter p {
+    font-size: 17px;
+}
+
+.signature {
+    text-align: right;
+
+    font-family: "Brush Script MT",
+                 "Segoe Script",
+                 cursive;
+
+    font-size: 30px;
+}
+
+/* =========================
+   MEMORY CARDS
+========================= */
+
+.memory-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(200px, 1fr));
+
+    gap: 18px;
+
+    margin-top: 25px;
+}
+
+.memory-card {
+    padding: 22px;
+
+    border-radius: 20px;
+
+    background: rgba(255,255,255,0.08);
+
+    border: 1px solid rgba(255,255,255,0.12);
+
+    transition: 0.3s;
+}
+
+.memory-card:hover {
+    transform: translateY(-5px);
+}
+
+/* =========================
+   SPECIAL QUALITIES
+========================= */
+
+.quality-list {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(220px, 1fr));
+
+    gap: 16px;
+
+    margin-top: 25px;
+}
+
+.quality {
+    padding: 22px;
+
+    border-radius: 20px;
+
+    background: rgba(255,255,255,0.08);
+
+    border: 1px solid rgba(255,255,255,0.12);
+}
+
+/* =========================
+   QUIZ
+========================= */
+
+.quiz-box {
+    width: min(650px, 95%);
+    margin: auto;
+}
+
+.progress-area {
+    margin-bottom: 25px;
+}
+
+.progress-text {
+    margin-bottom: 8px;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.progress {
+    width: 100%;
+    height: 9px;
+
+    border-radius: 20px;
+
+    background: rgba(255,255,255,0.15);
+
+    overflow: hidden;
+}
+
+.progress-bar {
+    width: 0%;
+    height: 100%;
+
+    background: linear-gradient(
+        90deg,
+        #ff6f9f,
+        #c978ff
+    );
+
+    transition: width 0.4s ease;
+}
+
+.question {
+    font-size: 25px;
+    line-height: 1.5;
+
+    margin-bottom: 25px;
+}
+
+.answers {
+    display: grid;
+    gap: 12px;
+}
+
+.answer {
+    width: 100%;
+
+    margin: 0;
+
+    background: rgba(255,255,255,0.1);
+
+    border: 1px solid rgba(255,255,255,0.18);
+
+    text-align: left;
+}
+
+.answer:hover {
+    background: rgba(255,255,255,0.18);
+}
+
+/* =========================
+   FINAL SCENE
+========================= */
+
+.final-scene {
+    background:
+        radial-gradient(circle at 50% 20%, #49305f 0%, transparent 30%),
+        linear-gradient(
+            180deg,
+            #090817,
+            #15102b,
+            #0a1021
+        );
+}
+
+.moon {
+    position: absolute;
+
+    top: 9%;
+    right: 12%;
+
+    width: 90px;
+    height: 90px;
+
+    border-radius: 50%;
+
+    background: #fff4c8;
+
+    box-shadow:
+        0 0 25px #fff4c8,
+        0 0 70px rgba(255,244,200,0.35);
+}
+
+.stars {
+    position: absolute;
+    inset: 0;
+
+    pointer-events: none;
+}
+
+.star {
+    position: absolute;
+
+    width: 3px;
+    height: 3px;
+
+    border-radius: 50%;
+
+    background: white;
+
+    animation: twinkle 2s infinite alternate;
+}
+
+.glow-heart {
+    position: absolute;
+
+    color: #ff83b5;
+
+    font-size: 25px;
+
+    pointer-events: none;
+
+    animation: floatHeart 4s linear forwards;
+}
+
+.flower {
+    position: fixed;
+
+    top: -40px;
+
+    pointer-events: none;
+
+    font-size: 25px;
+
+    animation: fall linear forwards;
+
+    z-index: 50;
+}
+
+.final-content {
+    position: relative;
+    z-index: 10;
+
+    width: min(850px, 94%);
+}
+
+.final-title {
+    font-size: clamp(35px, 7vw, 70px);
+
+    margin-bottom: 20px;
+}
+
+.final-letter {
+    background: #fff8ef;
+
+    color: #3c2535;
+
+    border-radius: 22px;
+
+    padding: 30px;
+
+    text-align: left;
+
+    box-shadow:
+        0 20px 70px rgba(0,0,0,0.45);
+
+    font-family:
+        "Brush Script MT",
+        "Segoe Script",
+        cursive;
+
+    font-size: 22px;
+
+    line-height: 1.8;
+
+    min-height: 250px;
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes topIn {
+    from {
+        opacity: 0;
+        transform: translateY(-80px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bottomIn {
+    from {
+        opacity: 0;
+        transform: translateY(80px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes leftIn {
+    from {
+        opacity: 0;
+        transform: translateX(-80px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes rightIn {
+    from {
+        opacity: 0;
+        transform: translateX(80px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes tiltIn {
+    from {
+        opacity: 0;
+        transform: rotate(-8deg) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: rotate(0) scale(1);
+    }
+}
+
+@keyframes twinkle {
+    from {
+        opacity: 0.2;
+        transform: scale(0.7);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1.4);
+    }
+}
+
+@keyframes floatHeart {
+    from {
+        opacity: 0;
+        transform: translateY(0) scale(0.7);
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(-400px) scale(1.3);
+    }
+}
+
+@keyframes fall {
+    from {
+        transform:
+            translateY(0)
+            rotate(0deg);
+        opacity: 1;
+    }
+
+    to {
+        transform:
+            translateY(110vh)
+            rotate(360deg);
+        opacity: 0.1;
+    }
+}
+
+.top-animation {
+    animation: topIn 0.8s ease;
+}
+
+.bottom-animation {
+    animation: bottomIn 0.8s ease;
+}
+
+.left-animation {
+    animation: leftIn 0.8s ease;
+}
+
+.right-animation {
+    animation: rightIn 0.8s ease;
+}
+
+.tilt-animation {
+    animation: tiltIn 0.8s ease;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+
+    .slide {
+        padding: 18px 12px;
+    }
+
+    .slide-content {
+        padding: 25px 18px;
+    }
+
+    p {
+        font-size: 16px;
+    }
+
+    .letter {
+        padding: 22px;
+    }
+
+    .final-letter {
+        font-size: 19px;
+        padding: 22px;
+    }
+
+    .moon {
+        width: 60px;
+        height: 60px;
+        right: 8%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+<!-- ==================================================
+     SLIDE 1
+================================================== -->
+
+<section class="slide active">
+
+    <div class="slide-content top-animation">
+
+        <div style="font-size:55px;">
+            💌
+        </div>
+
+        <h1>Dudu Anki ❤️</h1>
+
+        <p>
+            Ek chhota sa surprise...
+            sirf tumhare liye.
+        </p>
+
+        <p class="small">
+            Isse jaldi-jaldi mat dekhna. 🌷
+        </p>
+
+        <button onclick="nextSlide()">
+            Open My Surprise 💌
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- ==================================================
+     SLIDE 2 — FIRST LETTER
+================================================== -->
+
+<section class="slide">
+
+    <div class="slide-content left-animation">
+
+        <h2>Hi Dudu ❤️</h2>
+
+        <div class="letter">
+
+            <p>
+                Aaj tumhare paas ek chhota sa mission hai. 😌
+            </p>
+
+            <p>
+                Is surprise mein kuch yaadein hain,
+                kuch baatein hain, aur kuch aise moments
+                hain jo shayad tum bhool gaye ho...
+                lekin maine nahi bhule.
+            </p>
+
+            <p>
+                Yaad hai?
+                Hamari pehli baat Free Fire mein hui thi.
+                Us waqt na tum jaante the ki aage kya hoga,
+                na main.
+            </p>
+
+            <p>
+                Aur dekho...
+                aaj tum yahan ho aur main tumhare liye
+                yeh sab bana rahi hoon. 🤭
+            </p>
+
+            <p>
+                Isliye is surprise ko jaldi-jaldi mat dekhna.
+                Har section mein thoda sa rukna,
+                thoda sa muskurana,
+                aur thoda sa mujhe yaad karna. ❤️
+            </p>
+
+            <p>
+                Aur haan...
+                aakhri tak zaroor jaana,
+                kyunki sabse special baat maine end ke
+                liye bachakar rakhi hai. 🌷✨
+            </p>
+
+        </div>
+
+        <button onclick="nextSlide()">
+            Continue 🌷
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- ==================================================
+     SLIDE 3 — SPECIAL QUALITIES
+================================================== -->
+
+<section class="slide">
+
+    <div class="slide-content right-animation">
+
+        <h2>Why You Are Special ❤️</h2>
+
+        <p>
+            Vaise to tumhari sabse khaas quality yeh hai
+            ki tum mere ho aur main tumhari. 😌
+        </p>
+
+        <div class="quality-list">
+
+            <div class="quality">
+                <h3>❤️ Apnapan</h3>
+
+                <p>
+                    Tumhare saath ek alag sa apnapan
+                    feel hota hai.
+                </p>
+            </div>
+
+            <div class="quality">
+                <h3>😌 Gussa + Care</h3>
+
+                <p>
+                    Gussa hone ke baad bhi tum baat ko
+                    wahi chhod nahi dete.
+                </p>
+            </div>
+
+            <div class="quality">
+                <h3>😂 Your Laugh</h3>
+
+                <p>
+                    Jab tum khul kar haste ho,
+                    mujhe bhi hasi aa jaati hai.
+                </p>
+            </div>
+
+            <div class="quality">
+                <h3>🤭 Cute Side</h3>
+
+                <p>
+                    Kabhi permission lena,
+                    kabhi cute tareeke se baat karna...
+                    ye sab accha lagta hai.
+                </p>
+            </div>
+
+            <div class="quality">
+                <h3>😤 Jealousy</h3>
+
+                <p>
+                    Tumhari jealousy tumhari
+                    best aur worst quality dono hai. 😌
+                </p>
+            </div>
+
+            <div class="quality">
+                <h3>💪 Kaam Kar Hi Dete Ho</h3>
+
+                <p>
+                    Thoda drama ho, thoda time lage...
+                    aakhir mein kaam kar hi dete ho. 😏
+                </p>
+            </div>
+
+        </div>
+
+        <button onclick="nextSlide()">
+            Our Memories 🌷
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- ==================================================
+     SLIDE 4 — MEMORIES
+================================================== -->
+
+<section class="slide">
+
+    <div class="slide-content bottom-animation">
+
+        <h2>Our Little Memories 🌷</h2>
+
+        <p>
+            Har memory perfect nahi thi...
+            par har memory hamari thi. ❤️
+        </p>
+
+        <div class="memory-grid">
+
+            <div class="memory-card">
+                <h3>🎮 First Conversation</h3>
+
+                <p>
+                    Hamari story ki starting
+                    Free Fire se hui.
+                </p>
+            </div>
+
+            <div class="memory-card">
+                <h3>💬 Conversations</h3>
+
+                <p>
+                    Game se baatein,
+                    baaton se habit,
+                    aur habit se importance.
+                </p>
+            </div>
+
+            <div class="memory-card">
+                <h3>😂 Little Laughs</h3>
+
+                <p>
+                    Chhoti chhoti baatein
+                    jo bina reason ke smile kara deti hain.
+                </p>
+            </div>
+
+            <div class="memory-card">
+                <h3>😤 Little Fights</h3>
+
+                <p>
+                    Arguments bhi hue,
+                    par baat phir bhi dil mein rahi.
+                </p>
+            </div>
+
+            <div class="memory-card">
+                <h3>🌷 Meeting</h3>
+
+                <p>
+                    Woh excitement,
+                    nervousness aur woh moment...
+                    sab yaad hai.
+                </p>
+            </div>
+
+            <div class="memory-card">
+                <h3>❤️ Our Moments</h3>
+
+                <p>
+                    Mujhe hamare moments isliye pasand nahi
+                    kyunki woh perfect the.
+                    Mujhe isliye pasand hain kyunki woh hamare the.
+                </p>
+            </div>
+
+        </div>
+
+        <button onclick="nextSlide()">
+            One Last Thing 🌙
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- ==================================================
+     SLIDE 5 — ONE LAST THING
+================================================== -->
+
+<section class="slide">
+
+    <div class="slide-content tilt-animation">
+
+        <h2>🌙 One Last Thing...</h2>
+
+        <div class="letter">
+
+            <p>
+                Dudu ❤️,
+            </p>
+
+            <p>
+                Agar tum yahan tak aa gaye ho,
+                to shayad tumhe andaza ho gaya hoga
+                ki tum mere liye kitne special ho. ✨
+            </p>
+
+            <p>
+                Aur agar abhi tak andaza nahi hua...
+                to thoda aur neeche jao,
+                sab pata chal jayega. 😌❤️
+            </p>
+
+            <p>
+                Duniya mein bahut log honge...
+                lekin mujhe to woh ladka pasand aa gaya
+                jo kabhi cute sa permission leta hai,
+                kabhi mujhe samjhata hai,
+                kabhi mujh par gussa karta hai,
+                aur kabhi itna jealous ho jaata hai
+                jaise main koi national treasure hoon. 🤭💖
+            </p>
+
+            <p>
+                Aur haan...
+                tumhari ek problem hai. 😏
+            </p>
+
+            <p>
+                Jitna zyada main tumhe jaanti ja rahi hoon,
+                utna hi zyada tum mujhe pasand aate ja rahe ho.
+                🌷❤️
+            </p>
+
+            <p>
+                Yeh fair nahi hai. 😤✨
+            </p>
+
+            <p>
+                Kabhi kabhi mujhe lagta hai ki tumhe pata bhi
+                nahi hai ki tumhari hasi kitni dangerous hai...
+                ek baar khul kar has do,
+                aur mera mood theek ho jaata hai. 😊💫
+            </p>
+
+            <p>
+                Aur phir tum kehte ho ki tum kuch nahi karte...
+                jhoothe. 😌❤️
+            </p>
+
+            <p>
+                Vaise ek secret bataun? 🤫🌙
+            </p>
+
+            <p>
+                Mujhe future ka sab kuch nahi pata...
+                lekin itna zaroor pata hai ki jab bhi main
+                apni khushiyon ke baare mein sochti hoon,
+                unmein tumhara naam kahin na kahin aa hi jaata hai. 💕✨
+            </p>
+
+            <p>
+                Aur shayad sabse ajeeb baat ye hai...
+                ki ab aadat si ho gayi hai tumhari. ❤️
+            </p>
+
+            <p>
+                Tum meri har khushi ki wajah nahi ho...
+                par meri bahut si muskurahaton ke peeche
+                tum zaroor ho. 💖
+            </p>
+
+            <p>
+                Ab bas ek kaam karo...
+                thoda sa muskurana 😊
+                aur phir neeche jaana...
+                kyunki jo maine sabse zyada dil se likha hai,
+                woh abhi bhi tumhara intezaar kar raha hai. 💌🌷❤️
+            </p>
+
+        </div>
+
+        <button onclick="startQuiz()">
+            Ab Questions Ka Time ❓❤️
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- ==================================================
+     SLIDE 6 — QUIZ
+================================================== -->
+
+<section class="slide">
+
+    <div class="slide-content">
+
+        <div class="quiz-box">
+
+            <h2>Little Quiz ❤️</h2>
+
+            <p>
+                Dekhte hain Dudu ko kitna yaad hai. 😌
+            </p>
+
+            <div class="progress-area">
+
+                <div class="progress-text" id="progressText">
+                    Question 1 of 10
+                </div>
+
+                <div class="progress">
+                    <div
+                        class="progress-bar"
+                        id="progressBar">
+                    </div>
+                </div>
+
+            </div>
+
+            <div
+                class="question"
+                id="question">
+            </div>
+
+            <div
+                class="answers"
+                id="answers">
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ==================================================
+     SLIDE 7 — FINAL
+================================================== -->
+
+<section class="slide final-scene">
+
+    <div class="stars" id="stars"></div>
+
+    <div class="moon"></div>
+
+    <div class="final-content">
+
+        <div class="final-title">
+            You Reached The End ❤️
+        </div>
+
+        <p>
+            Ab asli letter tumhara wait kar raha hai...
+        </p>
+
+        <div
+            class="final-letter"
+            id="finalLetter">
+        </div>
+
+    </div>
+
+</section>
+
+</div>
+
+
+<script>
+
+/* ==================================================
+   SLIDE CONTROL
+================================================== */
+
+const slides = document.querySelectorAll(".slide");
+
+let currentSlide = 0;
+
+function showSlide(index) {
+
+    if (index < 0 || index >= slides.length) {
+        return;
+    }
+
+    slides.forEach((slide) => {
+        slide.classList.remove("active");
+    });
+
+    slides[index].classList.add("active");
+
+    currentSlide = index;
+}
+
+function nextSlide() {
+
+    if (currentSlide < slides.length - 1) {
+        showSlide(currentSlide + 1);
+    }
+}
+
+
+/* ==================================================
+   QUIZ DATA
+================================================== */
+
+const questions = [
+
+    {
+        question:
+        "Hamari pehli conversation kahan hui thi?",
+
+        answers: [
+            "Instagram 📱",
+            "Free Fire 🎮",
+            "School 🏫",
+            "WhatsApp 💬"
+        ]
+    },
+
+    {
+        question:
+        "Mujhe tumhari kaunsi cheez bahut pasand hai?",
+
+        answers: [
+            "Jab tum khul kar haste ho 😂",
+            "Tumhara homework 😭",
+            "Tumhari shopping 🛍️",
+            "Tumhara phone 📱"
+        ]
+    },
+
+    {
+        question:
+        "Tumhari kaunsi quality best aur worst dono hai?",
+
+        answers: [
+            "Jealousy 😤",
+            "Sleeping 😴",
+            "Gaming 🎮",
+            "Cooking 🍳"
+        ]
+    },
+
+    {
+        question:
+        "Hamari story ka starting point kya tha?",
+
+        answers: [
+            "Ek game 🎮",
+            "Ek movie 🎬",
+            "Ek school event 🏫",
+            "Ek trip ✈️"
+        ]
+    },
+
+    {
+        question:
+        "Mujhe tumhara kaunsa side cute lagta hai?",
+
+        answers: [
+            "Permission lena 😌",
+            "Ignore karna 😭",
+            "Late reply karna 🫠",
+            "Phone band karna 📱"
+        ]
+    },
+
+    {
+        question:
+        "Hamare moments mujhe kyun special lagte hain?",
+
+        answers: [
+            "Kyuki woh perfect the",
+            "Kyuki woh expensive the",
+            "Kyuki woh hamare the ❤️",
+            "Kyuki woh short the"
+        ]
+    },
+
+    {
+        question:
+        "Gussa hone ke baad tum kya karte ho?",
+
+        answers: [
+            "Hamesha ignore",
+            "Shaant hokar baat samjhate ho ❤️",
+            "Game delete",
+            "Soya karte ho"
+        ]
+    },
+
+    {
+        question:
+        "Mujhe tumhari hasi ke baare mein kya lagta hai?",
+
+        answers: [
+            "Boring hai",
+            "Dangerous hai 😌",
+            "Normal hai",
+            "Bahut loud hai"
+        ]
+    },
+
+    {
+        question:
+        "Future ke liye meri simple wish kya hai?",
+
+        answers: [
+            "Bas alag rehna",
+            "Ek dusre ka saath dena ❤️",
+            "Kabhi baat na karna",
+            "Sirf games khelna"
+        ]
+    },
+
+    {
+        question:
+        "Aakhri question... tum mere liye kya ho?",
+
+        answers: [
+            "Random person",
+            "Sirf gaming partner",
+            "Meri bahut si muskurahaton ki wajah ❤️",
+            "Classmate"
+        ]
+    }
+
+];
+
+let questionIndex = 0;
+
+
+/* ==================================================
+   START QUIZ
+================================================== */
+
+function startQuiz() {
+
+    questionIndex = 0;
+
+    showSlide(5);
+
+    loadQuestion();
+}
+
+
+/* ==================================================
+   LOAD QUESTION
+================================================== */
+
+function loadQuestion() {
+
+    const questionElement =
+        document.getElementById("question");
+
+    const answersElement =
+        document.getElementById("answers");
+
+    const progressText =
+        document.getElementById("progressText");
+
+    const progressBar =
+        document.getElementById("progressBar");
+
+    const currentQuestion =
+        questions[questionIndex];
+
+    questionElement.textContent =
+        currentQuestion.question;
+
+    answersElement.innerHTML = "";
+
+    progressText.textContent =
+        "Question " +
+        (questionIndex + 1) +
+        " of " +
+        questions.length;
+
+    progressBar.style.width =
+        ((questionIndex + 1) /
+        questions.length * 100) + "%";
+
+
+    currentQuestion.answers.forEach(
+        function(answer) {
+
+            const button =
+                document.createElement("button");
+
+            button.className = "answer";
+
+            button.textContent = answer;
+
+            button.onclick = function() {
+                nextQuestion();
+            };
+
+            answersElement.appendChild(button);
+        }
+    );
+}
+
+
+/* ==================================================
+   NEXT QUESTION
+================================================== */
+
+function nextQuestion() {
+
+    questionIndex++;
+
+    if (questionIndex >= questions.length) {
+
+        finishQuiz();
+
+        return;
+    }
+
+    loadQuestion();
+}
+
+
+/* ==================================================
+   FINISH QUIZ
+================================================== */
+
+function finishQuiz() {
+
+    showSlide(6);
+
+    createStars();
+
+    createHearts();
+
+    createFlowers();
+
+    typeLetter();
+}
+
+
+/* ==================================================
+   STARS
+================================================== */
+
+function createStars() {
+
+    const starsContainer =
+        document.getElementById("stars");
+
+    starsContainer.innerHTML = "";
+
+    for (let i = 0; i < 70; i++) {
+
+        const star =
+            document.createElement("div");
+
+        star.className = "star";
+
+        star.style.left =
+            Math.random() * 100 + "%";
+
+        star.style.top =
+            Math.random() * 100 + "%";
+
+        star.style.animationDelay =
+            Math.random() * 2 + "s";
+
+        starsContainer.appendChild(star);
+    }
+}
+
+
+/* ==================================================
+   FLOATING HEARTS
+================================================== */
+
+function createHearts() {
+
+    for (let i = 0; i < 18; i++) {
+
+        setTimeout(
+            function() {
+
+                const heart =
+                    document.createElement("div");
+
+                heart.className = "glow-heart";
+
+                heart.textContent = "❤️";
+
+                heart.style.left =
+                    Math.random() * 100 + "%";
+
+                heart.style.bottom =
+                    "-30px";
+
+                heart.style.animationDuration =
+                    (3 + Math.random() * 3) + "s";
+
+                document
+                    .querySelector(".final-scene")
+                    .appendChild(heart);
+
+                setTimeout(
+                    function() {
+                        heart.remove();
+                    },
+                    6000
+                );
+
+            },
+            i * 400
+        );
+    }
+}
+
+
+/* ==================================================
+   FALLING FLOWERS
+================================================== */
+
+function createFlowers() {
+
+    const flowerTypes = [
+        "🌸",
+        "🌷",
+        "🌺",
+        "🌼"
+    ];
+
+    for (let i = 0; i < 35; i++) {
+
+        setTimeout(
+            function() {
+
+                const flower =
+                    document.createElement("div");
+
+                flower.className = "flower";
+
+                flower.textContent =
+                    flowerTypes[
+                        Math.floor(
+                            Math.random() *
+                            flowerTypes.length
+                        )
+                    ];
+
+                flower.style.left =
+                    Math.random() * 100 + "%";
+
+                flower.style.animationDuration =
+                    (4 + Math.random() * 5) + "s";
+
+                document.body.appendChild(flower);
+
+                setTimeout(
+                    function() {
+                        flower.remove();
+                    },
+                    10000
+                );
+
+            },
+            i * 220
+        );
+    }
+}
+
+
+/* ==================================================
+   FINAL LETTER
+================================================== */
+
+const finalLetterText = `Dear Badal,
+
+Kabhi kabhi mujhe lagta hai ki kitni ajeeb si baat hai ki hamari pehli baat Free Fire mein hui thi, aur aaj tum meri zindagi ke itne important hisson mein se ek ho.
+
+Us waqt mujhe bilkul nahi pata tha ki ek game ke through mili hui baat itni saari yaadon mein badal jayegi.
+
+Tumhari bahut si baatein mujhe pasand hain, lekin kuch chhoti chhoti cheezein mere dil mein alag jagah rakhti hain.
+
+Jab tum khul kar haste ho, tab pata nahi kyun mujhe bhi hasi aa jaati hai. ❤️
+
+Aur jab tum cute tareeke se koi baat kehte ho, ya kisi cheez ke liye permission lete ho, tab tum aur bhi zyada pyaare lagte ho. 😌
+
+Mujhe tumhare saath bitaya hua har pal pasand hai.
+
+Hamari baatein, hamari chhoti chhoti nok-jhok, aur woh moments jo shayad kisi aur ko normal lagen, lekin mere liye bahut special hain.
+
+Aur haan...
+
+Kabhi kabhi thank you bolna zaroori hota hai.
+
+So...
+
+Thank you meri baatein sunne ke liye,
+mera saath dene ke liye,
+mujhe hasane ke liye,
+aur meri zindagi ka itna khoobsurat hissa banne ke liye. ❤️
+
+Future ke liye meri bas itni si wish hai:
+
+Apna khayal rakhna abhi...
+
+Phir main aaungi...
+
+Aur phir tumhara itna khayal rakhungi ki tum bhaagne ki planning karoge aur main tumhe pakad kar wapas le aaungi. 😌😂
+
+Main chahti hoon ki hum dono ek dusre ka saath dein, ek dusre ko samjhein, aur life ke har phase mein saath chalne ki koshish karein.
+
+Perfect hona zaroori nahi hai.
+
+Saath rehkar ek dusre ko samajhna zaroori hai. ❤️
+
+Aur yaad rakhna...
+
+Tum mere liye sirf ek insaan nahi ho.
+
+Tum meri bahut si muskurahaton ki wajah ho. ❤️
+
+Forever,
+
+Anki ❤️`;
+
+
+/* ==================================================
+   TYPEWRITER
+================================================== */
+
+function typeLetter() {
+
+    const element =
+        document.getElementById("finalLetter");
+
+    element.textContent = "";
+
+    let index = 0;
+
+    function typeNext() {
+
+        if (index >= finalLetterText.length) {
+            return;
+        }
+
+        element.textContent +=
+            finalLetterText.charAt(index);
+
+        index++;
+
+        setTimeout(
+            typeNext,
+            22
+        );
+    }
+
+    setTimeout(
+        typeNext,
+        1000
+    );
+}
+
+
+/* ==================================================
+   INITIAL STATE
+================================================== */
+
+showSlide(0);
+
+</script>
+
+</body>
+</html>
